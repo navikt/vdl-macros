@@ -8,7 +8,11 @@
 
     alter {{materialization}} {{ this }}
     modify column {{ column }}
-    set masking policy {{ this.database }}.{{ var("policy_schema") }}.{{ policy }}
+    {% if var("policy_db") %}
+        set masking policy {{ var("policy_db") }}.{{ var("policy_schema") }}.{{ policy }}
+    {% else %}
+        set masking policy {{ this.database }}.{{ var("policy_schema") }}.{{ policy }}
+    {% endif %}
     using (
     {{ column }}
     {%- for arg in using %}
