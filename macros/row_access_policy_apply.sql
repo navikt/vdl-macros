@@ -1,8 +1,8 @@
-{% macro apply_row_access_policy(policy, column, using) %}
+{% macro apply_row_access_policy(policy, using) %}
     {%- set materialization = config.get("materialized") -%}
     {% if materialization != "view" %} {%- set materialization = "table" -%} {% endif %}
     {% set unset_policy_sql %}
-        alter {{materialization}} {{ this }} add row access policy unset masking policy;  
+        alter {{materialization}} {{ this }} drop row access policy;  
     {% endset %}
     {% do run_query(unset_policy_sql) %}
 
