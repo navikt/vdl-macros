@@ -9,9 +9,8 @@
         add row access policy {{ this.database }}.{{ var("policy_schema") }}.{{ policy }}
     {% endif %}
     using (
-    {{ column }}
     {%- for arg in using %}
-    ,{{ arg }}
+    {{ arg }}{% if not loop.last %},{% endif %}
     {% endfor %}
 )
 
