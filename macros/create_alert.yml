@@ -1,0 +1,30 @@
+version: 2
+
+macros:
+  - name: create_alert
+    description: "A 'run-operation' macro that creates an alert that sends a notification to slack when the given query is true. Alerts needs to be created using a dbt-profile with role set to 'accountadmin'. See snowflake documentation for more info. ref: https://docs.snowflake.com/en/user-guide/alerts https://docs.getdbt.com/reference/commands/run-operation"
+    arguments:
+      - name: name
+        type: string
+        description: The name of the alert
+      - name: message
+        type: string
+        description: The message sendt with the notification
+      - name: query
+        type: string
+        description: The query to run to check if the alert should be triggered
+      - name: integration
+        type: string
+        description: The slack integration to use. See slack_integrations in macro for available integrations.
+      - name: warehouse
+        type: string
+        description: The warehouse to run the query on. See warehouses in macro for available warehouses.
+      - name: schedule
+        type: string
+        description: "The schedule for the alert. See snowflake documentation for valid schedules. ref: https://docs.snowflake.com/en/sql-reference/sql/create-alert#required-parameters"
+      - name: database
+        type: string
+        description: The database where the alert is created
+      - name: schema
+        type: string
+        description: The schema where the alert is created
