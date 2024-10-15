@@ -1,0 +1,14 @@
+{
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "dbt.queryLimit": 500,
+  "[jinja-sql]": {
+    "editor.defaultFormatter": "innoverio.vscode-dbt-power-user",
+    "editor.formatOnSave": true
+  },
+  "dbt.enableNewLineagePanel": true,
+  "files.associations": {
+    "*.sql": "jinja-sql"
+  },
+}
