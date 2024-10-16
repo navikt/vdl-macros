@@ -17,8 +17,8 @@ macros:
         type: string
         description: The slack integration to use. See slack_integrations in macro for available integrations.
       - name: warehouse
-        type: string
-        description: The warehouse to run the query on. See warehouses in macro for available warehouses.
+        type: bool
+        description: Use warehouse to run the query. If false, the query will be run in serverless mode.
       - name: schedule
         type: string
         description: "The schedule for the alert. See snowflake documentation for valid schedules. ref: https://docs.snowflake.com/en/sql-reference/sql/create-alert#required-parameters"

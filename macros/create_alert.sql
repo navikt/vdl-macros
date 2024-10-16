@@ -3,7 +3,7 @@
     message,
     query,
     integration,
-    warehouse="regnskap_streamer",
+    warehouse=true,
     schedule="using cron 0-59/10 6-19 * * * Europe/Oslo",
     database=target.database,
     schema=var("alert_schema")
@@ -13,10 +13,6 @@
         "slack_alert": "slack_alert_webhook_int",
         "slack_info": "slack_info_webhook_int",
     } %}
-    {% set warehouses = [
-        "serverless",
-        "regnskap_streamer",
-    ] %}
 
     {% if integration not in slack_integrations.keys() %}
         {{
@@ -28,22 +24,12 @@
             )
         }}
     {% endif %}
-    {% if warehouse not in warehouses %}
-        {{
-            exceptions.raise_compiler_error(
-                "Invalid `warehouse`. Got: "
-                ~ warehouse
-                ~ ".\nAvailable warehouses: "
-                ~ warehouses
-            )
-        }}
-    {% endif %}
 
     {% set sql %}
         create or replace alert {{ database }}.{{ schema }}.{{ name }}
         schedule = '{{ schedule }}'
-        {% if warehouse != "serverless" %}
-            warehouse = '{{ warehouse }}'
+        {% if warehouse %}
+            warehouse = 'regnskap_streamer'
         {% endif %}
         if(exists ({{ query }}))
         then
