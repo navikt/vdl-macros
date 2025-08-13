@@ -1,15 +1,15 @@
-Welcome to your new dbt project!
+# vdl-macros
 
-### Using the starter project
+En samling av macroer som vi bruker på tvers. Se [macro reference](docs/macro_reference.md) for detaljer om hver macro.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## Installasjon
 
+```shell
+make install
+```
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+## Oppdatere dokumentasjon
+
+```shell
+make doc
+```

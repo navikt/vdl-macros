@@ -1,0 +1,26 @@
+version: 2
+
+macros:
+  - name: convert_dbt_snapshot
+    description: "A 'run-operation' macro that creates a append only history table of daily snapshots of the entire dataset from a dbt snapshot table from the first dbt_valid_to to the current date."
+    usage: >-
+      dbt run-operation convert_dbt_snapshot --args '{
+        "from": "your_dbt_snapshot_table",
+        "to": "your_target_table"
+      }'
+    arguments:
+      - name: from
+        type: relation
+        description: "The dbt snapshot table you want to convert to a daily snapshot history table."
+      - name: to
+        type: relation
+        description: "The target table where the daily snapshot of the history will be stored."
+      - name: loaded_at_column_name
+        type: optional[column]
+        description: "The name of the column that will be used to store the timestamp of when the row was loaded. If not provided, it defaults to '_loaded_at'"
+      - name: exclude_columns
+        type: optional[list[column]]
+        description: "A list of columns to exclude from the snapshot history table. If not provided, all columns will be included except columns added by dbt snapshot."
+      - name: exclude_dbt_columns
+        type: optional[list[column]]
+        description: "A list of columns that are added by dbt snapshot to exclude from the snapshot history table."

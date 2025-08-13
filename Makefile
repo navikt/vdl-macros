@@ -12,3 +12,6 @@ install:
 	python3.11 -m venv $(VENV) && \
 		$(PY) pip install --upgrade pip && \
 		$(PY) pip install dbt-core
+
+doc:
+	$(PY) docs.create
