@@ -1,0 +1,341 @@
+unit_tests:
+  - name: test_hist_new_record__full_refresh
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+    expect:
+      rows:
+        - {
+            id: 1,
+            t: "2024-01-01 00:00:00",
+            val: "foo",
+            _hist_loaded_at: "2024-01-01 00:00:00",
+          }
+
+  - name: test_hist_new_record__incremental
+    description: "Test that the new record is inserted into the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-01-02 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-02 00:00:00", val: "foo" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+              _hist_record_updated_at: "2024-01-01 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            id: 2,
+            t: "2024-01-02 00:00:00",
+            val: "foo",
+            _hist_loaded_at: "2024-01-02 00:00:00",
+          }
+
+  - name: test_hist_no_duplicated_record__full_refresh
+    description: "Test that there are no duplicated records in the history table when there is no change"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-01-02 00:00:00", val: "foo" }
+    expect:
+      rows:
+        - {
+            id: 1,
+            t: "2024-01-01 00:00:00",
+            val: "foo",
+            _hist_loaded_at: "2024-01-01 00:00:00",
+          }
+
+  - name: test_hist_no_duplicated_record__incremental
+    description: "Test that the no new record is inserted into the history table when there is no change"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-01-02 00:00:00", val: "foo" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+              _hist_record_updated_at: "2024-01-01 01:00:00",
+            }
+    expect:
+      rows: []
+
+  - name: test_hist_multiple_records_when_changed__full_refresh
+    description: "Test that there is records for each change in the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-01-02 00:00:00", val: "bar" }
+    expect:
+      rows:
+        - {
+            id: 1,
+            t: "2024-01-01 00:00:00",
+            val: "foo",
+            _hist_loaded_at: "2024-01-01 00:00:00",
+          }
+        - {
+            id: 1,
+            t: "2024-01-02 00:00:00",
+            val: "bar",
+            _hist_loaded_at: "2024-01-02 00:00:00",
+          }
+
+  - name: test_hist_new_record_when_changed__incremental
+    description: "Test that there is records for each change in the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-01-02 00:00:00", val: "bar" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+              _hist_record_updated_at: "2024-01-01 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            id: 1,
+            t: "2024-01-02 00:00:00",
+            val: "bar",
+            _hist_loaded_at: "2024-01-02 00:00:00",
+          }
+
+  - name: test_hist_record_when_entity_key_is_deleted__full_refresh
+    description: "Test that deleted entity key is recorded in the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-02 00:00:00", val: "bar" }
+    expect:
+      rows:
+        - {
+            id: 1,
+            _hist_loaded_at: "2024-01-01 00:00:00",
+            _hist_entity_key_is_deleted: true,
+          }
+        - {
+            id: 2,
+            _hist_loaded_at: "2024-01-02 00:00:00",
+            _hist_entity_key_is_deleted: false,
+          }
+
+  - name: test_hist_record_is_updated_when_entity_key_is_deleted__incremental
+    description: "Test that deleted entity key recorded is updated in the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-02 00:00:00", val: "bar" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+              _hist_record_updated_at: "2024-01-01 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            id: 1,
+            _hist_loaded_at: "2024-01-01 00:00:00",
+            _hist_entity_key_is_deleted: true,
+          }
+        - {
+            id: 2,
+            _hist_loaded_at: "2024-01-02 00:00:00",
+            _hist_entity_key_is_deleted: false,
+          }
+
+  - name: test_hist_record_stays_deleted_when_entity_key_is_deleted__incremental
+    description: "Test that deleted entity key stays deleted in the history table"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-02 00:00:00", val: "foo" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: true,
+              _hist_record_updated_at: "2024-01-02 01:00:00",
+            }
+          - {
+              id: 2,
+              t: "2024-01-02 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-02 00:00:00",
+              _hist_entity_key_hash: "c81e728d9d4c2f636f067f89cc14862c",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "c09edbaa7dea590bdacb2732bd9fa1c9",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+              _hist_record_updated_at: "2024-01-02 01:00:00",
+            }
+    expect:
+      rows: []
+
+  - name: test_hist_new_record_when_last_entity_key_was_deleted__full_refresh
+    description: "Test that new record is inserted when last entity key was deleted"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-02 00:00:00", val: "bar" }
+          - { id: 1, t: "2024-01-03 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-03 00:00:00", val: "bar" }
+    expect:
+      rows:
+        - {
+            id: 1,
+            _hist_loaded_at: "2024-01-01 00:00:00",
+            _hist_entity_key_is_deleted: true,
+          }
+        - {
+            id: 2,
+            _hist_loaded_at: "2024-01-02 00:00:00",
+            _hist_entity_key_is_deleted: false,
+          }
+        - {
+            id: 1,
+            _hist_loaded_at: "2024-01-03 00:00:00",
+            _hist_entity_key_is_deleted: false,
+          }
+
+  - name: test_hist_new_record_when_last_entity_key_was_deleted__incremental
+    description: "Test that new record is inserted when last entity key was deleted"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-02-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-03-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-03-01 00:00:00", val: "foo" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+            }
+          - {
+              id: 2,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c81e728d9d4c2f636f067f89cc14862c",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "3ed3afbf172f8b221eee8c8792fcd70a",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: true,
+            }
+    expect:
+      rows:
+        - {
+            id: 2,
+            _hist_loaded_at: "2024-03-01 00:00:00",
+            _hist_entity_key_is_deleted: false,
+            _hist_last_entity_key_is_deleted: true,
+          }
