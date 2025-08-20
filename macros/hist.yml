@@ -4,21 +4,19 @@ macros:
   - name: hist
     description: "Creates a compromised history of changes to the specified entity keys from a append only table containing daily full snapshot."
     usage: >-
-      {{
-        vdl_macros.hist(
-          from=source("oebs", "hierarki"),
-          entity_key=["hierarchy_code", "flex_value_id"],
-          check_cols=[
-              "flex_value",
-              "description",
-              "flex_value_id_parent",
-              "flex_value_parent",
-              "description_parent",
-              "flex_value_set_name",
-          ],
-          loaded_at="_loaded_at",
-        )
-      }}
+      vdl_macros.hist(
+        from=source("oebs", "hierarki"),
+        entity_key=["hierarchy_code", "flex_value_id"],
+        check_cols=[
+            "flex_value",
+            "description",
+            "flex_value_id_parent",
+            "flex_value_parent",
+            "description_parent",
+            "flex_value_set_name",
+        ],
+        loaded_at="_loaded_at",
+      )
     arguments:
       - name: from
         type: relation
@@ -31,4 +29,4 @@ macros:
         description: "The columns in the <from> table to check for changes."
       - name: loaded_at
         type: column
-        description: "The column containing timestamp of when the row was loaded in the <from> table."
+        description: "The column containing a timestamp of when the row was loaded in the <from> table."
