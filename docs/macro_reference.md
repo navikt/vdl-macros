@@ -43,7 +43,7 @@ Creates a slowly changing dimension (SCD) table from a table created by the hist
 ### Usage
 
 ```
-{{ vdl_macros.scd2(from=ref("hist_oebs__hierarki")) }}
+vdl_macros.scd2(from=ref("hist_oebs__hierarki"))
 ```
 
 ### Arguments
@@ -137,21 +137,19 @@ Creates a compromised history of changes to the specified entity keys from a app
 ### Usage
 
 ```
-{{
-  vdl_macros.hist(
-    from=source("oebs", "hierarki"),
-    entity_key=["hierarchy_code", "flex_value_id"],
-    check_cols=[
-        "flex_value",
-        "description",
-        "flex_value_id_parent",
-        "flex_value_parent",
-        "description_parent",
-        "flex_value_set_name",
-    ],
-    loaded_at="_loaded_at",
-  )
-}}
+vdl_macros.hist(
+  from=source("oebs", "hierarki"),
+  entity_key=["hierarchy_code", "flex_value_id"],
+  check_cols=[
+      "flex_value",
+      "description",
+      "flex_value_id_parent",
+      "flex_value_parent",
+      "description_parent",
+      "flex_value_set_name",
+  ],
+  loaded_at="_loaded_at",
+)
 ```
 
 ### Arguments
@@ -161,8 +159,8 @@ Creates a compromised history of changes to the specified entity keys from a app
  - **description:** The append only table containing daily full snapshot you want to make history for.
 
 **entity_key**
- - **type:** column
- - **description:** The entity key(s) column in the <from> table that uniquely identify a record to track changes to.
+ - **type:** list[column]
+ - **description:** The columns in the <from> table that uniquely identify a record to track changes to.
 
 **check_cols**
  - **type:** list[column]
@@ -170,6 +168,6 @@ Creates a compromised history of changes to the specified entity keys from a app
 
 **loaded_at**
  - **type:** column
- - **description:** The column containing timestamp of when the row was loaded in the <from> table.
+ - **description:** The column containing a timestamp of when the row was loaded in the <from> table.
 
 

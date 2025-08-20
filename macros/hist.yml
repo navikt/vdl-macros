@@ -22,8 +22,8 @@ macros:
         type: relation
         description: The append only table containing daily full snapshot you want to make history for.
       - name: entity_key
-        type: column
-        description: "The entity key(s) column in the <from> table that uniquely identify a record to track changes to."
+        type: list[column]
+        description: "The columns in the <from> table that uniquely identify a record to track changes to."
       - name: check_cols
         type: list[column]
         description: "The columns in the <from> table to check for changes."
