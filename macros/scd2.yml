@@ -1,0 +1,35 @@
+version: 2
+
+macros:
+  - name: scd2
+    description: "Creates a slowly changing dimension (SCD) table from a table created by the hist-macro."
+    usage: >-
+      {{ vdl_macros.scd2(from=ref("hist_oebs__hierarki")) }}
+    arguments:
+      - name: from
+        type: relation
+        description: The table created by the hist-macro that you want to convert to a slowly changing dimension.
+      - name: unique_key
+        type: optional[column]
+        description: "The column in the <from> table that uniquely identifies a record. If not provided, it defaults to '_hist_record_hash'."
+      - name: entity_key
+        type: optional[column]
+        description: "The column in the <from> table that identifies the entity for the slowly changing dimension. If not provided, it defaults to '_hist_entity_key_hash'."
+      - name: updated_at
+        type: optional[column]
+        description: "The column containing timestamp of when the row was updated in the <from> table. If not provided, it defaults to '_hist_record_updated_at'."
+      - name: loaded_at
+        type: optional[column]
+        description: "The column containing timestamp of when the row was loaded in the <from> table. If not provided, it defaults to '_hist_loaded_at'."
+      - name: deleted_at
+        type: optional[column]
+        description: "The column containing timestamp of when the entity_key was deleted in the <from> table. If not provided, it defaults to '_hist_entity_key_deleted_at'."
+      - name: created_at
+        type: optional[column]
+        description: "The column containing timestamp of when the record was created in the <from> table. If not provided, it defaults to '_hist_record_created_at'."
+      - name: first_valid_from
+        type: string
+        description: "A string in valid timestamp format representing the first valid from date used on records with the lowest <loaded_at> value. If not provided, it defaults to '1900-01-01 00:00:00'."
+      - name: last_valid_to
+        type: string
+        description: "A string in valid timestamp format representing the last valid to date used on latest record for each entity key with the highest <loaded_at> value. If not provided, it defaults to '9999-12-31 23:59:59'."
