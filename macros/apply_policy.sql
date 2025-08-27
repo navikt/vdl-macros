@@ -1,4 +1,4 @@
-{% macro apply_masking_policy(policy, column, using) %}
+{% macro apply_masking_policy(policy, column, using, database=this.database) %}
     {%- set materialization = config.get("materialized") -%}
     {% if materialization != "view" %} {%- set materialization = "table" -%} {% endif %}
     {% set unset_policy_sql %}
@@ -8,12 +8,8 @@
 
     alter {{materialization}} {{ this }}
     modify column {{ column }}
-    {% set db = var('policy_db', none) %}
-    {% if db is not none  %}
-        set masking policy {{ var("policy_db") }}.{{ var("policy_schema") }}.{{ policy }}
-    {% else %}
-        set masking policy {{ this.database }}.{{ var("policy_schema") }}.{{ policy }}
-    {% endif %}
+    set masking policy {{ database }}.{{ var("policy_schema") }}.{{ policy }}
+ 
     using (
     {{ column }}
     {%- for arg in using %}
