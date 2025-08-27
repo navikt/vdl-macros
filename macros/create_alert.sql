@@ -6,7 +6,7 @@
     warehouse=true,
     schedule="using cron 0-59/10 6-19 * * * Europe/Oslo",
     database=target.database,
-    schema=var("alert_schema")
+    schema="alerts"
 ) %}
     {% set slack_integrations = {
         "slack_test": "slack_test_webhook_int",
