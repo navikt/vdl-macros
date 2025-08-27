@@ -122,12 +122,12 @@ None
  - **description:** The schedule for the alert. See snowflake documentation for valid schedules. ref: https://docs.snowflake.com/en/sql-reference/sql/create-alert#required-parameters
 
 **database**
- - **type:** string
- - **description:** The database where the alert is created
+ - **type:** optional[string]
+ - **description:** The database where the alert is created. If not specified, the target database will be used.
 
 **schema**
- - **type:** string
- - **description:** The schema where the alert is created
+ - **type:** optional[string]
+ - **description:** The schema where the alert is created. If not specified, the target schema will be used.
 
 
 ## hist
