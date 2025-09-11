@@ -93,7 +93,18 @@
             from _union_records
         ),
 
-        _macro_final as (select * from _valid_to_from)
+        _filter_out_deleted_duplicates as (
+            select *
+            from _valid_to_from
+            qualify
+                row_number() over (
+                    partition by _hist_record_hash order by _scd2_valid_to
+                )
+                = 1
+        ),
+
+        _macro_final as (select * from _filter_out_deleted_duplicates)
+
     select *
     from _macro_final
 
