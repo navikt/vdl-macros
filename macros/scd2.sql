@@ -67,7 +67,10 @@
                 {{ dbt_utils.star(from=from, relation_alias='this', quote_identifiers=false) }},
                 current_timestamp as _scd2_record_updated_at
             from {{ this }} as this
-            inner join _src on this.{{ entity_key }} = _src.{{ entity_key }}
+            inner join
+                _src
+                on this.{{ entity_key }} = _src.{{ entity_key }}
+                and _src.{{ deleted_at }} is null
             where this._scd2_valid_to = '{{ last_valid_to }}'::timestamp
         ),
 
@@ -93,17 +96,7 @@
             from _union_records
         ),
 
-        _filter_out_deleted_duplicates as (
-            select *
-            from _valid_to_from
-            qualify
-                row_number() over (
-                    partition by _hist_record_hash order by _scd2_valid_to
-                )
-                = 1
-        ),
-
-        _macro_final as (select * from _filter_out_deleted_duplicates)
+        _macro_final as (select * from _valid_to_from)
 
     select *
     from _macro_final
