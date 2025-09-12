@@ -11,7 +11,7 @@ install:
 	rm -rf .venv
 	python3.11 -m venv $(VENV) && \
 		$(PY) pip install --upgrade pip && \
-		$(PY) pip install dbt-core
+		$(PY) pip install dbt-core dbt-snowflake
 
 doc:
 	$(PY) docs.create

@@ -1,5 +1,5 @@
 {{
-    hist(
+    vdl_macros.hist(
         from=ref("test_hist_src"),
         entity_key=["id"],
         check_cols=["val"],

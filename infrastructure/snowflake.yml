@@ -1,0 +1,20 @@
+id: test_macros
+
+databases:
+  - name: test_macros
+    transient: true
+    schemas:
+      - name: tests
+
+warehouses:
+  - name: test_macros_transformer
+
+roles:
+  - name: test_macros_transformer
+
+grants:
+  - role: test_macros_transformer
+    warehouses:
+        - test_macros_transformer
+    write_on_schemas:
+        - test_macros.tests

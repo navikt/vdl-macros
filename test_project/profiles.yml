@@ -1,0 +1,16 @@
+test_project:
+  target: "dev"
+  outputs:
+    dev:
+      type: snowflake
+      account: "wx23413.europe-west4.gcp"
+      user: "{{ env_var('DBT_USR') }}"
+      role: "test_macros_transformer"
+      # SSO config
+      authenticator: externalbrowser
+      database: "test_macros"
+      warehouse: "test_macros_transformer"
+      schema: "tests"
+      threads: 8
+      client_session_keep_alive: False
+      reuse_connections: True

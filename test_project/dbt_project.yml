@@ -1,0 +1,14 @@
+name: 'test_project'
+version: '0.1.0'
+config-version: 2
+
+profile: 'test_project'
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+model-paths: ["models"]
+
+require-dbt-version: ">=1.0.0"
+
+flags:
+  send_anonymous_usage_stats: false
