@@ -21,13 +21,13 @@
             {% if is_incremental() %}
                 {{
                     vdl_macros._scd2__incremental(
-                        from, unique_key, entity_key, updated_at, loaded_at, deleted_at, first_valid_from, last_valid_to
+                        from, entity_key, updated_at, loaded_at, deleted_at, last_valid_to
                     )
                 }}
             {% else %}
                 {{
                     vdl_macros._scd2__full_refresh(
-                        from, unique_key, entity_key, updated_at, loaded_at, deleted_at, first_valid_from, last_valid_to
+                        from, entity_key, loaded_at, deleted_at, first_valid_from, last_valid_to
                     )
                 }}
             {% endif %}
@@ -35,8 +35,8 @@
 
         _scd2_rename_cols as (
             select
-                {{ unique_key }} as pk_{{ this.name }},
-                {{ entity_key }} as ek_{{ this.name }},
+                {{ unique_key }} as pk_{{ var("this_name", this.name) }},
+                {{ entity_key }} as ek_{{ var("this_name", this.name) }},
                 {{ loaded_at }} as lastet_tidspunkt,
                 _scd2_record_updated_at as oppdatert_tidspunkt,
                 {{ created_at }} as opprettet_tidspunkt,
@@ -52,11 +52,11 @@
 
 {% endmacro %}
 
-{% macro _scd2__incremental(from, unique_key, entity_key, updated_at, loaded_at, deleted_at, first_valid_from, last_valid_to) %}
+{% macro _scd2__incremental(from, entity_key, updated_at, loaded_at, deleted_at, last_valid_to) %}
     with
         _src as (
             select
-                {{ dbt_utils.star(from=from, quote_identifiers=false) }},
+                *,
                 current_timestamp as _scd2_record_updated_at,
             from {{ from }}
             where {{ updated_at }} > (select max({{ updated_at }}) from {{ this }})
@@ -64,7 +64,18 @@
 
         _last_valid_records as (
             select
-                {{ dbt_utils.star(from=from, relation_alias='this', quote_identifiers=false) }},
+                this.* exclude(
+                    pk_{{ var("this_name", this.name) }},
+                    ek_{{ var("this_name", this.name) }},
+                    lastet_tidspunkt,
+                    oppdatert_tidspunkt,
+                    opprettet_tidspunkt,
+                    gyldig_fra,
+                    gyldig_til,
+                    _scd2_valid_from,
+                    _scd2_valid_to,
+                    _scd2_record_updated_at
+                ),
                 current_timestamp as _scd2_record_updated_at
             from {{ this }} as this
             inner join
@@ -103,7 +114,7 @@
 
 {% endmacro %}
 
-{% macro _scd2__full_refresh(from, unique_key, entity_key, updated_at, loaded_at, deleted_at, first_valid_from, last_valid_to) %}
+{% macro _scd2__full_refresh(from, entity_key, loaded_at, deleted_at, first_valid_from, last_valid_to) %}
     with
         _src as (
             select
