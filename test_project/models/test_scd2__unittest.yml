@@ -6,16 +6,16 @@ unit_tests:
       macros:
         is_incremental: false
     given:
-      - input: ref('test_hist')
+      - input: ref('test_scd2_src')
         rows:
           - {
-              _hist_record_hash: 1,
-              _hist_loaded_at: "2024-01-01 00:00:00",
+              unique_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
             }
     expect:
       rows:
         - {
-            _hist_record_hash: 1,
+            unique_key: 1,
             gyldig_fra: "1900-01-01 00:00:00",
           }
 
@@ -31,20 +31,20 @@ unit_tests:
       - input: this
         rows:
           - {
-              _hist_record_hash: 1,
-              _hist_entity_key_hash: 1,
-              _hist_loaded_at: "2024-01-01 00:00:00",
-              _hist_record_updated_at: "2024-01-01 01:00:00",
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+              updated_at: "2024-01-01 01:00:00",
               _scd2_valid_from: "1900-01-01 00:00:00",
               _scd2_valid_to: "9999-01-01 23:59:59",
             }
-      - input: ref('test_hist')
+      - input: ref('test_scd2_src')
         rows:
           - {
-              _hist_record_hash: 2,
-              _hist_entity_key_hash: 1,
-              _hist_loaded_at: "2024-01-02 00:00:00",
-              _hist_record_updated_at: "2024-01-02 01:00:00",
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+              updated_at: "2024-01-02 01:00:00",
             }
     expect:
       rows:
