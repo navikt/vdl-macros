@@ -6,8 +6,8 @@
     loaded_at="_hist_loaded_at",
     deleted_at="_hist_entity_key_deleted_at",
     created_at="_hist_record_created_at",
-    first_valid_from="1900-01-01 00:00:00",
-    last_valid_to="9999-01-01 23:59:59"
+    first_valid_from="1900-01-01 00:00:00+01:00",
+    last_valid_to="9999-01-01 23:59:59+01:00"
 ) %}
     {{
         config(
@@ -21,13 +21,13 @@
             {% if is_incremental() %}
                 {{
                     vdl_macros._scd2__incremental(
-                        from, entity_key, updated_at, loaded_at, deleted_at, last_valid_to
+                        from=from, entity_key=entity_key, updated_at=updated_at, loaded_at=loaded_at, deleted_at=deleted_at, last_valid_to=last_valid_to
                     )
                 }}
             {% else %}
                 {{
                     vdl_macros._scd2__full_refresh(
-                        from, entity_key, loaded_at, deleted_at, first_valid_from, last_valid_to
+                        from=from, entity_key=entity_key, loaded_at=loaded_at, deleted_at=deleted_at, first_valid_from=first_valid_from, last_valid_to=last_valid_to
                     )
                 }}
             {% endif %}
@@ -82,7 +82,7 @@
                 _src
                 on this.{{ entity_key }} = _src.{{ entity_key }}
                 and _src.{{ deleted_at }} is null
-            where this._scd2_valid_to = '{{ last_valid_to }}'::timestamp
+            where this._scd2_valid_to = '{{ last_valid_to }}'::timestamp_ltz
         ),
 
         _union_records as (
@@ -102,7 +102,7 @@
                     lead(_scd2_valid_from) over (
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
-                    '{{ last_valid_to }}'::timestamp
+                    '{{ last_valid_to }}'::timestamp_ltz
                 ) as _scd2_valid_to
             from _union_records
         ),
@@ -129,7 +129,7 @@
                 * exclude _first_loaded,
                 case
                     when _first_loaded
-                    then '{{ first_valid_from }}'::timestamp
+                    then '{{ first_valid_from }}'::timestamp_ltz
                     else {{ loaded_at }}
                 end as _scd2_valid_from,
                 coalesce(
@@ -137,7 +137,7 @@
                     lead(_scd2_valid_from) over (
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
-                    '{{ last_valid_to }}'::timestamp
+                    '{{ last_valid_to }}'::timestamp_ltz
                 ) as _scd2_valid_to
             from _src
         ),

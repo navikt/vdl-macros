@@ -1,6 +1,8 @@
 unit_tests:
   - name: test_scd2_first_valid_from__full_refresh
-    description: "Test that records with the initial loaded_at sets 'gyldig_fra' to the first_valid_from value"
+    description: >
+      Test that records with the initial loaded_at sets 'gyldig_fra' to the
+      first_valid_from value
     model: test_scd2
     overrides:
       macros:
@@ -20,7 +22,9 @@ unit_tests:
           }
 
   - name: test_scd2_first_valid_to__incremental
-    description: "Test that updating a record from with the initial loaded_at does not change 'gyldig_fra' from the first_valid_from value"
+    description: >
+      Test that updating a record from with the initial loaded_at does not
+      change 'gyldig_fra' from the first_valid_from value
     model: test_scd2
     overrides:
       macros:
