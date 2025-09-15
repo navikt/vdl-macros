@@ -57,6 +57,7 @@
         _src as (
             select
                 *,
+                null as _scd2_valid_from,
                 current_timestamp as _scd2_record_updated_at,
             from {{ from }}
             where {{ updated_at }} > (select max({{ updated_at }}) from {{ this }})
@@ -76,6 +77,7 @@
                     _scd2_valid_to,
                     _scd2_record_updated_at
                 ),
+                this._scd2_valid_from,
                 current_timestamp as _scd2_record_updated_at
             from {{ this }} as this
             inner join
@@ -93,10 +95,16 @@
             from _last_valid_records
         ),
 
-        _valid_to_from as (
+        _valid_from as (
+            select
+                * exclude _scd2_valid_from,
+                coalesce(_scd2_valid_from, {{ loaded_at }}) as _scd2_valid_from
+            from _union_records
+        ),
+
+        _valid_to as (
             select
                 *,
-                {{ loaded_at }} as _scd2_valid_from,
                 coalesce(
                     {{ deleted_at }},
                     lead(_scd2_valid_from) over (
@@ -104,10 +112,10 @@
                     ),
                     '{{ last_valid_to }}'::timestamp_ltz
                 ) as _scd2_valid_to
-            from _union_records
+            from _valid_from
         ),
 
-        _macro_final as (select * from _valid_to_from)
+        _macro_final as (select * from _valid_to)
 
     select *
     from _macro_final
