@@ -6,8 +6,8 @@
     loaded_at="_hist_loaded_at",
     deleted_at="_hist_entity_key_deleted_at",
     created_at="_hist_record_created_at",
-    first_valid_from="1900-01-01 00:00:00",
-    last_valid_to="9999-01-01 23:59:59"
+    first_valid_from="1900-01-01 00:00:00+01:00",
+    last_valid_to="9999-01-01 23:59:59+01:00"
 ) %}
     {{
         config(
@@ -21,13 +21,13 @@
             {% if is_incremental() %}
                 {{
                     vdl_macros._scd2__incremental(
-                        from, entity_key, updated_at, loaded_at, deleted_at, last_valid_to
+                        from=from, entity_key=entity_key, updated_at=updated_at, loaded_at=loaded_at, deleted_at=deleted_at, last_valid_to=last_valid_to
                     )
                 }}
             {% else %}
                 {{
                     vdl_macros._scd2__full_refresh(
-                        from, entity_key, loaded_at, deleted_at, first_valid_from, last_valid_to
+                        from=from, entity_key=entity_key, loaded_at=loaded_at, deleted_at=deleted_at, first_valid_from=first_valid_from, last_valid_to=last_valid_to
                     )
                 }}
             {% endif %}
@@ -57,6 +57,7 @@
         _src as (
             select
                 *,
+                null as _scd2_valid_from,
                 current_timestamp as _scd2_record_updated_at,
             from {{ from }}
             where {{ updated_at }} > (select max({{ updated_at }}) from {{ this }})
@@ -76,13 +77,14 @@
                     _scd2_valid_to,
                     _scd2_record_updated_at
                 ),
+                this._scd2_valid_from,
                 current_timestamp as _scd2_record_updated_at
             from {{ this }} as this
             inner join
                 _src
                 on this.{{ entity_key }} = _src.{{ entity_key }}
                 and _src.{{ deleted_at }} is null
-            where this._scd2_valid_to = '{{ last_valid_to }}'::timestamp
+            where this._scd2_valid_to = '{{ last_valid_to }}'::timestamp_ltz
         ),
 
         _union_records as (
@@ -93,21 +95,27 @@
             from _last_valid_records
         ),
 
-        _valid_to_from as (
+        _valid_from as (
+            select
+                * exclude _scd2_valid_from,
+                coalesce(_scd2_valid_from, {{ loaded_at }}) as _scd2_valid_from
+            from _union_records
+        ),
+
+        _valid_to as (
             select
                 *,
-                {{ loaded_at }} as _scd2_valid_from,
                 coalesce(
                     {{ deleted_at }},
                     lead(_scd2_valid_from) over (
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
-                    '{{ last_valid_to }}'::timestamp
+                    '{{ last_valid_to }}'::timestamp_ltz
                 ) as _scd2_valid_to
-            from _union_records
+            from _valid_from
         ),
 
-        _macro_final as (select * from _valid_to_from)
+        _macro_final as (select * from _valid_to)
 
     select *
     from _macro_final
@@ -129,7 +137,7 @@
                 * exclude _first_loaded,
                 case
                     when _first_loaded
-                    then '{{ first_valid_from }}'::timestamp
+                    then '{{ first_valid_from }}'::timestamp_ltz
                     else {{ loaded_at }}
                 end as _scd2_valid_from,
                 coalesce(
@@ -137,7 +145,7 @@
                     lead(_scd2_valid_from) over (
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
-                    '{{ last_valid_to }}'::timestamp
+                    '{{ last_valid_to }}'::timestamp_ltz
                 ) as _scd2_valid_to
             from _src
         ),

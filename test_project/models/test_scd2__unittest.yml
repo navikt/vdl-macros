@@ -1,0 +1,194 @@
+unit_tests:
+  - name: test_scd2_first_valid_from__full_refresh
+    description: >
+      Test that records with the initial loaded_at sets 'gyldig_fra' to the
+      first_valid_from value
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            gyldig_fra: "1900-01-01 00:00:00",
+          }
+
+  - name: test_scd2_first_valid_to__incremental
+    description: >
+      Test that updating a record from with the initial loaded_at does not
+      change 'gyldig_fra' from the first_valid_from value
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: true
+      vars:
+        this_name: test_scd2
+    given:
+      - input: this
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+              updated_at: "2024-01-01 01:00:00",
+              _scd2_valid_from: "1900-01-01 00:00:00",
+              _scd2_valid_to: "9999-01-01 23:59:59",
+            }
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+              updated_at: "2024-01-02 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            pk_test_scd2: 1,
+            gyldig_fra: "1900-01-01 00:00:00",
+          }
+        - {
+            pk_test_scd2: 2,
+            gyldig_fra: "2024-01-02 00:00:00",
+          }
+
+  - name: test_scd2_last_valid_to__full_refresh
+    description: >
+      Test that records with no subsequent loaded_at sets 'gyldig_til' to
+      'last_valid_to' value
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            gyldig_til: "9999-01-01 23:59:59",
+          }
+
+  - name: test_scd2_last_valid_to__incremental
+    description: >
+      Test that loading new entity keys with no subsequent loaded_at does not
+      change 'gyldig_til' from the 'last_valid_to' value on existing records
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: true
+      vars:
+        this_name: test_scd2
+    given:
+      - input: this
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+              updated_at: "2024-01-01 01:00:00",
+              _scd2_valid_from: "1900-01-01 00:00:00",
+              _scd2_valid_to: "9999-01-01 23:59:59",
+            }
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 2,
+              entity_key: 2,
+              loaded_at: "2024-01-02 00:00:00",
+              updated_at: "2024-01-02 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 2
+          }
+
+  - name: test_scd2_gyldig_til__full_refresh
+    description: >
+      Test that entity keys with a subsequent loaded_at sets 'gyldig_til' to the
+      next loaded_at
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+            }
+          - {
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            gyldig_til: "2024-01-02 00:00:00",
+          }
+        - {
+            unique_key: 2,
+            gyldig_til: "9999-01-01 23:59:59",
+          }
+
+  - name: test_scd2_gyldig_til__incremental
+    description: >
+      Test that entity keys with a subsequent loaded_at updates 'gyldig_til' to
+      the next loaded_at
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: true
+      vars:
+        this_name: test_scd2
+    given:
+      - input: this
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+              updated_at: "2024-01-01 01:00:00",
+              _scd2_valid_from: "1900-01-01 00:00:00",
+              _scd2_valid_to: "9999-01-01 23:59:59",
+            }
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+              updated_at: "2024-01-02 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            entity_key: 1,
+            gyldig_til: "2024-01-02 00:00:00",
+          }
+        - {
+            unique_key: 2,
+            entity_key: 1,
+            gyldig_til: "9999-01-01 23:59:59",
+          }
