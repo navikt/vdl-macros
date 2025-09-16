@@ -13,3 +13,12 @@ make install
 ```shell
 make doc
 ```
+
+## Release
+
+* Oppdater dokumentasjonen
+* Oppdater versjonsnr i `dbt_project.yml`
+
+```shell
+make release
+```

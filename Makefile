@@ -15,3 +15,6 @@ install:
 
 doc:
 	$(PY) docs.create
+
+release:
+	./release.sh
