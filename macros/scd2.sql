@@ -42,6 +42,7 @@
                 {{ created_at }} as opprettet_tidspunkt,
                 _scd2_valid_from as gyldig_fra,
                 _scd2_valid_to as gyldig_til,
+                _scd2_is_latest as er_siste_gyldige,
                 *,
             from _scd2_cte
         ),
@@ -73,8 +74,10 @@
                     opprettet_tidspunkt,
                     gyldig_fra,
                     gyldig_til,
+                    er_siste_gyldige,
                     _scd2_valid_from,
                     _scd2_valid_to,
+                    _scd2_is_latest,
                     _scd2_record_updated_at
                 ),
                 this._scd2_valid_from,
@@ -111,7 +114,8 @@
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
                     '{{ last_valid_to }}'::timestamp_ltz
-                ) as _scd2_valid_to
+                ) as _scd2_valid_to,
+                '{{ last_valid_to }}'::timestamp_ltz = _scd2_valid_to as _scd2_is_latest
             from _valid_from
         ),
 
@@ -146,7 +150,8 @@
                         partition by {{ entity_key }} order by _scd2_valid_from
                     ),
                     '{{ last_valid_to }}'::timestamp_ltz
-                ) as _scd2_valid_to
+                ) as _scd2_valid_to,
+                '{{ last_valid_to }}'::timestamp_ltz = _scd2_valid_to as _scd2_is_latest
             from _src
         ),
 

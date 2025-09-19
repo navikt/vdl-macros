@@ -23,8 +23,8 @@ unit_tests:
 
   - name: test_scd2_first_valid_to__incremental
     description: >
-      Test that updating a record from with the initial loaded_at does not
-      change 'gyldig_fra' from the first_valid_from value
+      Test that updating a record with the initial loaded_at keeps the
+      first_valid_from value in 'gyldig_fra'
     model: test_scd2
     overrides:
       macros:
@@ -191,4 +191,97 @@ unit_tests:
             unique_key: 2,
             entity_key: 1,
             gyldig_til: "9999-01-01 23:59:59",
+          }
+
+  - name: test_scd2_is_latest__full_refresh
+    description: >
+      Test that the latest record for each entity key is marked as latest
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+          }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            er_siste_gyldige: true,
+          }
+  - name: test_scd2_is_latest__incremental
+    description: >
+      Test that the latest record for a entity key is marked as latest and
+      older is marked as not latest
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: true
+      vars:
+        this_name: test_scd2
+    given:
+      - input: this
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+              updated_at: "2024-01-01 01:00:00",
+              _scd2_valid_from: "1900-01-01 00:00:00",
+              _scd2_valid_to: "9999-01-01 23:59:59",
+              _scd2_is_latest: true,
+            }
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+              updated_at: "2024-01-02 01:00:00",
+            }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            er_siste_gyldige: false,
+          }
+        - {
+            unique_key: 2,
+            er_siste_gyldige: true,
+          }
+
+  - name: test_scd2_is_not_latest__full_refresh
+    description: >
+      Test that the earlier records for a entity key is not marked as latest
+    model: test_scd2
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('test_scd2_src')
+        rows:
+          - {
+              unique_key: 1,
+              entity_key: 1,
+              loaded_at: "2024-01-01 00:00:00",
+          }
+          - {
+              unique_key: 2,
+              entity_key: 1,
+              loaded_at: "2024-01-02 00:00:00",
+          }
+    expect:
+      rows:
+        - {
+            unique_key: 1,
+            er_siste_gyldige: false,
+          }
+        - {
+            unique_key: 2,
+            er_siste_gyldige: true,
           }
