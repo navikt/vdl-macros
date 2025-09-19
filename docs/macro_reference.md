@@ -77,11 +77,11 @@ vdl_macros.scd2(from=ref("hist_oebs__hierarki"))
  - **description:** The column containing timestamp of when the record was created in the <from> table. If not provided, it defaults to '_hist_record_created_at'.
 
 **first_valid_from**
- - **type:** string
+ - **type:** optional[string]
  - **description:** A string in valid timestamp format representing the first valid from date used on records with the lowest <loaded_at> value. If not provided, it defaults to '1900-01-01 00:00:00'.
 
 **last_valid_to**
- - **type:** string
+ - **type:** optional[string]
  - **description:** A string in valid timestamp format representing the last valid to date used on latest record for each entity key with the highest <loaded_at> value. If not provided, it defaults to '9999-12-31 23:59:59'.
 
 
