@@ -339,3 +339,55 @@ unit_tests:
             _hist_entity_key_is_deleted: false,
             _hist_last_entity_key_is_deleted: true,
           }
+
+  - name: test_hist_record_is_not_updated_when_last_entity_key_was_deleted__incremental
+    description: "Test that existing record is not updated when last entity key was deleted"
+    model: test_hist
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('test_hist_src')
+        rows:
+          - { id: 1, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-02-01 00:00:00", val: "foo" }
+          - { id: 1, t: "2024-03-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-01-01 00:00:00", val: "foo" }
+          - { id: 2, t: "2024-03-01 00:00:00", val: "foo" }
+      - input: this
+        rows:
+          - {
+              id: 1,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c4ca4238a0b923820dcc509a6f75849b",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "ac9ccbd6325d29f956d5b9090c23f1de",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: false,
+            }
+          - {
+              id: 2,
+              t: "2024-01-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-01-01 00:00:00",
+              _hist_entity_key_hash: "c81e728d9d4c2f636f067f89cc14862c",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "3ed3afbf172f8b221eee8c8792fcd70a",
+              _hist_last_entity_key_is_deleted: false,
+              _hist_entity_key_is_deleted: true,
+            }
+          - {
+              id: 2,
+              t: "2024-03-01 00:00:00",
+              val: "foo",
+              _hist_loaded_at: "2024-03-01 00:00:00",
+              _hist_entity_key_hash: "c81e728d9d4c2f636f067f89cc14862c",
+              _hist_check_cols_hash: "acbd18db4cc2f85cedef654fccc4a4d8",
+              _hist_record_hash: "a00be95d971b0d958e35d5bb3f2d40ed",
+              _hist_last_entity_key_is_deleted: true,
+              _hist_entity_key_is_deleted: false,
+            }
+    expect:
+      rows: []

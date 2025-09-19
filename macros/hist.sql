@@ -9,7 +9,8 @@
 
     {% if is_incremental() %}
         {{ vdl_macros._hist__incremental(from, entity_key, check_cols, loaded_at) }}
-    {% else %} {{ vdl_macros._hist__full_refresh(from, entity_key, check_cols, loaded_at) }}
+    {% else %}
+        {{ vdl_macros._hist__full_refresh(from, entity_key, check_cols, loaded_at) }}
     {% endif %}
 {% endmacro %}
 
@@ -39,6 +40,7 @@
             qualify
                 max(_hist_loaded_at) over (partition by _hist_entity_key_hash)
                 = this._hist_loaded_at
+                and (select count(*) from src) > 0  -- Only run if there are new records
         ),
 
         union_records as (
