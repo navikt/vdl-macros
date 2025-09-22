@@ -1,5 +1,5 @@
 name: 'vdl_macros'
-version: '0.2.0'
+version: '0.2.1'
 config-version: 2
 
 target-path: "target"

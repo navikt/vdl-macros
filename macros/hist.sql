@@ -180,8 +180,6 @@
             left join
                 {{ this }} this
                 on meta_columns._hist_record_hash = this._hist_record_hash
-                and meta_columns._hist_last_entity_key_is_deleted
-                = this._hist_last_entity_key_is_deleted
                 and meta_columns._hist_entity_key_is_deleted
                 = this._hist_entity_key_is_deleted
             where this._hist_record_hash is null
