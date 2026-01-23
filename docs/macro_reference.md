@@ -7,10 +7,7 @@ A 'run-operation' macro that creates a append only history table of daily snapsh
 ### Usage
 
 ```
-dbt run-operation convert_dbt_snapshot --args '{
-  "from": "your_dbt_snapshot_table",
-  "to": "your_target_table"
-}'
+None
 ```
 
 ### Arguments
@@ -43,7 +40,7 @@ Creates a slowly changing dimension (SCD) table from a table created by the hist
 ### Usage
 
 ```
-vdl_macros.scd2(from=ref("hist_oebs__hierarki"))
+None
 ```
 
 ### Arguments
@@ -137,19 +134,7 @@ Creates a compromised history of changes to the specified entity keys from a app
 ### Usage
 
 ```
-vdl_macros.hist(
-  from=source("oebs", "hierarki"),
-  entity_key=["hierarchy_code", "flex_value_id"],
-  check_cols=[
-      "flex_value",
-      "description",
-      "flex_value_id_parent",
-      "flex_value_parent",
-      "description_parent",
-      "flex_value_set_name",
-  ],
-  loaded_at="_loaded_at",
-)
+None
 ```
 
 ### Arguments

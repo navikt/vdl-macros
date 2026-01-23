@@ -1,9 +1,10 @@
 name: 'vdl_macros'
-version: '0.2.1'
+version: '0.2.2'
 config-version: 2
 
-target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 macro-paths: ["macros"]
 
 require-dbt-version: ">=1.0.0"
+flags:
+  require_generic_test_arguments_property: true
