@@ -3,12 +3,13 @@ version: 2
 macros:
   - name: convert_dbt_snapshot
     description: "A 'run-operation' macro that creates a append only history table of daily snapshots of the entire dataset from a dbt snapshot table from the first dbt_valid_to to the current date."
-    meta:
-      usage: >-
-        dbt run-operation convert_dbt_snapshot --args '{
-          "from": "your_dbt_snapshot_table",
-          "to": "your_target_table"
-        }'
+    config:
+      meta:
+        usage: >-
+          dbt run-operation convert_dbt_snapshot --args '{
+            "from": "your_dbt_snapshot_table",
+            "to": "your_target_table"
+          }'
     arguments:
       - name: from
         type: relation

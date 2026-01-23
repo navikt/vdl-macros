@@ -3,21 +3,22 @@ version: 2
 macros:
   - name: hist
     description: "Creates a compromised history of changes to the specified entity keys from a append only table containing daily full snapshot."
-    meta:
-      usage: >-
-        vdl_macros.hist(
-          from=source("oebs", "hierarki"),
-          entity_key=["hierarchy_code", "flex_value_id"],
-          check_cols=[
-              "flex_value",
-              "description",
-              "flex_value_id_parent",
-              "flex_value_parent",
-              "description_parent",
-              "flex_value_set_name",
-          ],
-          loaded_at="_loaded_at",
-        )
+    config:
+      meta:
+        usage: >-
+          vdl_macros.hist(
+            from=source("oebs", "hierarki"),
+            entity_key=["hierarchy_code", "flex_value_id"],
+            check_cols=[
+                "flex_value",
+                "description",
+                "flex_value_id_parent",
+                "flex_value_parent",
+                "description_parent",
+                "flex_value_set_name",
+            ],
+            loaded_at="_loaded_at",
+          )
     arguments:
       - name: from
         type: relation

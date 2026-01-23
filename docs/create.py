@@ -15,7 +15,7 @@ for doc in docs:
     ref_string += f"## {doc.get('name')}\n\n"
     ref_string += f"{doc.get('description')}\n\n"
     ref_string += "### Usage\n\n"
-    ref_string += f"```\n{doc.get('usage')}\n```\n\n"
+    ref_string += f"```\n{doc.get('config', {}).get('meta', {}).get('usage', '')}\n```\n\n"
     ref_string += "### Arguments\n\n"
     for arg in doc.get("arguments", []):
         ref_string += f"**{arg.get('name')}**\n - **type:** {arg.get('type')}\n - **description:** {arg.get('description')}\n\n"
