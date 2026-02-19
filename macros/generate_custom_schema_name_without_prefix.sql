@@ -1,8 +1,6 @@
 {% macro generate_custom_schema_name_without_prefix(varargs, kwargs) -%}
     {% set custom_schema_name = varargs[0] %}
     {% set node = varargs[1] %}
-    {{ log("custom_schema_name: " ~ custom_schema_name, info=True) }}
-    {{ log("node: " ~ node, info=True) }}
 
     {%- set default_schema = target.schema -%}
     {%- if custom_schema_name is none -%} {{ default_schema }}
