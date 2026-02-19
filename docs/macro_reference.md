@@ -1,5 +1,20 @@
 # Macro Reference
 
+## generate_custom_schema_name_without_prefix
+
+Used to override the default generate_schema_name macro to generate a custom schema name without a prefix.
+
+### Usage
+
+```
+{% macro generate_schema_name() %}
+  {{ vdl_macros.generate_custom_schema_name_without_prefix(varargs, kwargs) }}
+{% endmacro %}
+```
+
+### Arguments
+
+
 ## convert_dbt_snapshot
 
 A 'run-operation' macro that creates a append only history table of daily snapshots of the entire dataset from a dbt snapshot table from the first dbt_valid_to to the current date.
@@ -128,6 +143,21 @@ A 'run-operation' macro that creates an alert that sends a notification to slack
 **schema**
  - **type:** optional[string]
  - **description:** The schema where the alert is created. If not specified, the target schema will be used.
+
+
+## ref_without_db
+
+Used to override the default ref macro to return a relation without the database name included.
+
+### Usage
+
+```
+{% macro ref() %}
+  {% do return(vdl_macros.ref_without_db(varargs, kwargs)) %}
+{% endmacro %}
+```
+
+### Arguments
 
 
 ## hist

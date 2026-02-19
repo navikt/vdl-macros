@@ -1,0 +1,11 @@
+version: 2
+
+macros:
+  - name: generate_custom_schema_name_without_prefix
+    description: "Used to override the default generate_schema_name macro to generate a custom schema name without a prefix."
+    config:
+      meta:
+        usage: >-
+          {% macro generate_schema_name() %}
+            {{ vdl_macros.generate_custom_schema_name_without_prefix(varargs, kwargs) }}
+          {% endmacro %}

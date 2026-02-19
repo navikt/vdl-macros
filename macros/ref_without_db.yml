@@ -1,0 +1,11 @@
+version: 2
+
+macros:
+  - name: ref_without_db
+    description: "Used to override the default ref macro to return a relation without the database name included."
+    config:
+      meta:
+        usage: >-
+          {% macro ref() %}
+            {% do return(vdl_macros.ref_without_db(varargs, kwargs)) %}
+          {% endmacro %}
