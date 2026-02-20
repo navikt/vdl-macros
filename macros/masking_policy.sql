@@ -1,16 +1,19 @@
 {% macro apply_masking_policy(
     policy, column, using, database=this.database, schema="policies"
 ) %}
+    {% if database == target.database %} {% set uri = schema ~ "." ~ policy %}
+    {% else %} {% set uri = database ~ "." ~ schema ~ "." ~ policy %}
+    {% endif %}
     {%- set materialization = config.get("materialized") -%}
     {% if materialization != "view" %} {%- set materialization = "table" -%} {% endif %}
     {% set unset_policy_sql %}
-        alter {{materialization}} {{ this }} modify column {{column}} unset masking policy;
+        alter {{ materialization }} {{ this }} modify column {{ column }} unset masking policy;
     {% endset %}
     {% do run_query(unset_policy_sql) %}
 
     alter {{materialization}} {{ this }}
     modify column {{ column }}
-    set masking policy {{ database }}.{{ schema }}.{{ policy }}
+    set masking policy {{ uri }}
 
     using (
     {{ column }}

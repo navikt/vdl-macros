@@ -1,9 +1,14 @@
-{% macro apply_row_access_policy(policy, using, database=this.database, schema="policies") %}
+{% macro apply_row_access_policy(
+    policy, using, database=this.database, schema="policies"
+) %}
+    {% if database == target.database %} {% set uri = schema ~ "." ~ policy %}
+    {% else %} {% set uri = database ~ "." ~ schema ~ "." ~ policy %}
+    {% endif %}
     {%- set materialization = config.get("materialized") -%}
     {% if materialization != "view" %} {%- set materialization = "table" -%} {% endif %}
 
     alter {{ materialization }} {{ this }}
-    add row access policy {{ database }}.{{ schema }}.{{ policy }}
+    add row access policy {{ uri }}
     on (
     {%- for arg in using %}
     {{ arg }}{% if not loop.last %},{% endif %}
