@@ -102,7 +102,7 @@ vdl_macros.scd2(from=ref("hist_oebs__hierarki"))
 
 ## create_alert
 
-A 'run-operation' macro that creates an alert that sends a notification to slack when the given query is true. Alerts needs to be created using a dbt-profile with role set to 'accountadmin'. See snowflake documentation for more info. ref: https://docs.snowflake.com/en/user-guide/alerts https://docs.getdbt.com/reference/commands/run-operation
+A 'run-operation' macro that creates an alert that sends a notification to slack when the given query is true. Alerts are executed using the privileges of the alert owner. ref: https://docs.snowflake.com/en/sql-reference/sql/create-alert#usage-notes
 
 ### Usage
 
